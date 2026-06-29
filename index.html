@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>고양이 공화국, 튀르키예</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  :root{
+    --paper:#ffffff; --ink:#3c3a35; --soft:#9a948b; --body:#5c574e; --line:#ece7df;
+    --accent:#7f9eb7; --accent-d:#5c7f9c;
+    --gold:var(--accent-d); --head:var(--ink); --muted:var(--soft); --card-bg:#ffffff; --ink-d:var(--ink); --frame-rad:2px;
+    --blue:#d2e0ec; --pink:#f4dadf; --mint:#dbe9e0; --peach:#f8e4d3; --lav:#e6dfee;
+    --serif:"Cormorant Garamond","Nanum Myeongjo",serif;
+    --script:"Nanum Pen Script","Sacramento",cursive;
+    --sans:"Gowun Dodum","Apple SD Gothic Neo","Pretendard","Malgun Gothic",sans-serif;
+  }
+  body{font-family:var(--sans);background:#efe9ec;color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+  .serif{font-family:var(--serif)} .script{font-family:var(--script)}
+  #deck{position:fixed;inset:0}
+  .slide{position:absolute;inset:0;display:flex;opacity:0;visibility:hidden;transition:opacity .55s ease,transform .55s ease;transform:translateY(12px);padding:6vh 8vw 7vh;overflow:hidden;background:var(--paper)}
+  .slide.active{opacity:1;visibility:visible;transform:none}
+  .slide.cream{background:#faf6f0}
+  .slide.p-blue{background:var(--blue)} .slide.p-pink{background:var(--pink)} .slide.p-mint{background:var(--mint)} .slide.p-peach{background:var(--peach)} .slide.p-lav{background:var(--lav)}
+  .r{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .active .r{opacity:1;transform:none}
+  .active .r1{transition-delay:.05s}.active .r2{transition-delay:.14s}.active .r3{transition-delay:.23s}.active .r4{transition-delay:.32s}.active .r5{transition-delay:.41s}
+  .kicker{font-family:var(--sans);font-size:.7rem;font-weight:700;letter-spacing:.34em;text-transform:uppercase;color:var(--accent-d)}
+  [class*="p-"] .kicker{color:#767066}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(2.8rem,6.4vw,5.2rem);line-height:1.05;letter-spacing:.01em;color:var(--ink)}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.95rem,3.8vw,3rem);line-height:1.16;color:var(--ink)}
+  p{font-size:clamp(.97rem,1.32vw,1.14rem);line-height:1.85;color:var(--body);font-weight:400}
+  .lead{font-size:clamp(1.05rem,1.55vw,1.3rem);color:var(--body)}
+  .em{color:var(--accent-d);font-weight:700}
+  .muted{color:var(--soft);font-size:.9rem;line-height:1.6}
+  .col{display:flex;flex-direction:column;justify-content:center;gap:1.15rem}
+  .center{align-items:flex-start;justify-content:center;flex-direction:column;width:100%}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:4.5vw;width:100%;align-items:center}
+  .split.rev{grid-template-columns:1fr 1fr}
+  .hero{display:flex;align-items:center;justify-content:center;position:relative}
+  .hero img{max-height:70vh;max-width:38vw;width:auto;height:auto;object-fit:cover;border-radius:2px;position:relative;z-index:1;box-shadow:0 18px 40px rgba(60,58,53,.14)}
+  .hero::after{content:"";position:absolute;z-index:0;width:46%;height:64%;right:-4%;bottom:-6%;background:var(--accent);opacity:.16;border-radius:2px}
+  .round{border-radius:50%!important;aspect-ratio:1/1;object-fit:cover!important;box-shadow:0 18px 40px rgba(60,58,53,.16)}
+  /* editorial layout components */
+  .slide.flush{padding:0}
+  .lay-swatch{display:grid;grid-template-columns:1.25fr 1fr;width:100%;align-items:center;gap:5vw}
+  .swatches{display:flex;flex-direction:column;gap:clamp(12px,2vh,26px);align-items:center;justify-self:center}
+  .swatches>span{width:clamp(120px,13.5vw,196px);height:clamp(120px,13.5vw,196px);border-radius:50%;display:block;flex:none}
+  .swatches .ph{overflow:hidden;box-shadow:0 18px 40px rgba(60,58,53,.2)}
+  .swatches .ph img{width:100%;height:100%;object-fit:cover}
+  .lay-bleed{display:grid;grid-template-columns:45% 1fr;width:100%;height:100%;align-items:center}
+  .lay-bleed.rev{grid-template-columns:1fr 45%}
+  .bleedimg{position:relative;height:100%;display:flex;align-items:center}
+  .bleedimg img{width:84%;height:70vh;object-fit:cover;position:relative;z-index:1;box-shadow:0 20px 44px rgba(60,58,53,.18)}
+  .bleedimg::before{content:"";position:absolute;top:11%;left:-9%;width:78%;height:78%;background:var(--pastel,var(--pink));z-index:0}
+  .lay-bleed.rev .bleedimg{justify-content:flex-end}
+  .lay-bleed.rev .bleedimg::before{left:auto;right:-9%}
+  .lay-bleed .txt{padding:0 6vw}
+  .bignum{font-family:var(--serif);font-size:clamp(4rem,9vw,8rem);line-height:.8;color:var(--accent);opacity:.5;font-weight:600}
+  /* script overlay headline + kicker line */
+  .shead{font-family:var(--script);font-size:clamp(2.3rem,5.2vw,4.3rem);line-height:1.02;color:var(--accent-d)}
+  [class*="p-"] .shead{color:#6f6657}
+  .kline{display:flex;align-items:center;gap:.8rem}
+  .kline::before{content:"";width:38px;height:2px;background:var(--accent-d);display:block;flex:none}
+  [class*="p-"] .kline::before{background:#6f6657}
+  /* magazine: pastel side-panel + body */
+  .lay-mag{display:grid;grid-template-columns:40% 1fr;width:100%;height:100%}
+  .lay-mag.rev{grid-template-columns:1fr 40%}
+  .mag-panel{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;gap:1.1rem;padding:0 4.5vw;background:var(--pastel,var(--mint))}
+  .mag-body{padding:0 6vw;display:flex;flex-direction:column;justify-content:center;gap:1rem}
+  /* numbered editorial rows */
+  .rows{display:flex;flex-direction:column;gap:0;width:100%}
+  .erow{display:grid;grid-template-columns:auto auto 1fr auto;gap:1.6vw;align-items:center;padding:.62rem 0;border-top:1px solid var(--line)}
+  .erow:last-child{border-bottom:1px solid var(--line)}
+  .erow .rn{font-family:var(--serif);font-size:clamp(1.7rem,3vw,2.6rem);color:var(--accent);line-height:1;font-weight:600;opacity:.65;min-width:1.6em}
+  .erow .rimg{width:clamp(52px,5.4vw,74px);height:clamp(52px,5.4vw,74px);border-radius:50%;object-fit:cover;box-shadow:0 8px 20px rgba(60,58,53,.16)}
+  .erow .rt h3{font-family:var(--serif);font-size:clamp(1.15rem,1.7vw,1.5rem);color:var(--ink);font-weight:600;margin-bottom:.15rem}
+  .erow .rt p{font-size:clamp(.9rem,1.15vw,1.05rem);line-height:1.55}
+  /* editorial big figures */
+  .figs{display:flex;flex-direction:column;width:100%}
+  .efig{display:grid;grid-template-columns:auto 1fr;align-items:baseline;gap:1.6rem;padding:.85rem 0;border-bottom:1px solid var(--line)}
+  .efig .fb{font-family:var(--serif);font-size:clamp(2.8rem,6.4vw,5.4rem);font-weight:600;color:var(--ink);line-height:.92}
+  .efig.accent .fb{color:var(--accent-d)}
+  .efig .fl{color:var(--soft);font-size:clamp(.95rem,1.2vw,1.1rem)}
+  /* photo cluster (grid overlap collage) */
+  .cluster{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);height:72vh;width:100%}
+  .cluster>*{border-radius:2px}
+  .cluster img{width:100%;height:100%;object-fit:cover;box-shadow:0 16px 36px rgba(60,58,53,.18)}
+  .cluster .c1{grid-area:1/1/6/5;z-index:2}
+  .cluster .c2{grid-area:3/4/9/8;z-index:3}
+  .cluster .c3{grid-area:1/6/4/9;z-index:2}
+  .cluster .cb{grid-area:2/3/8/7;background:var(--pastel,var(--peach));z-index:1}
+  /* mosaic with script overlay */
+  .mhead{position:absolute;z-index:5;pointer-events:none}
+  .kstrip{display:grid;grid-template-columns:repeat(5,1fr);gap:.55rem;width:100%}
+  .kstill{width:100%;height:12vh;object-fit:cover;border-radius:2px;box-shadow:0 8px 20px rgba(60,58,53,.14);cursor:zoom-in;background:#d8d2c8}
+  /* inline detail list + panel */
+  .crow{display:grid;grid-template-columns:auto auto 1fr;gap:1.1rem;align-items:center;padding:.62rem .55rem;border-top:1px solid var(--line);cursor:pointer;border-radius:8px;transition:background .2s}
+  .crow:last-of-type{border-bottom:1px solid var(--line)}
+  .crow.on{background:var(--mint)}
+  .crow .rn{font-family:var(--serif);font-size:clamp(1.5rem,2.4vw,2.1rem);color:var(--accent);opacity:.6;font-weight:600;min-width:1.5em}
+  .crow .rt h3{font-family:var(--serif);font-size:clamp(1.05rem,1.5vw,1.32rem);color:var(--ink);font-weight:600}
+  .crow .rt p{font-size:.88rem;line-height:1.45;color:var(--soft)}
+  .citybtn{border:1px solid var(--accent);color:var(--accent-d);background:transparent;border-radius:999px;padding:.22rem .72rem;font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .crow.on .citybtn,.citybtn:hover{background:var(--accent-d);color:#fff;border-color:var(--accent-d)}
+  #cityPanel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:1.4rem 1.6rem;box-shadow:0 12px 34px rgba(60,58,53,.1);min-height:52vh;max-height:64vh;overflow:auto}
+  #cityPanel img{width:100%;height:26vh;object-fit:contain;border-radius:8px;margin-bottom:1rem;background:#f3eee6}
+  #cityPanel h3{font-family:var(--serif);font-size:clamp(1.35rem,1.9vw,1.7rem);color:var(--ink);margin-bottom:.55rem}
+  #cityPanel p{font-size:clamp(.92rem,1.15vw,1.02rem);line-height:1.7;color:var(--body)}
+  #cityPanel p+p{margin-top:.6rem}
+  #cityPanel b{color:var(--accent-d)}
+  /* visual TOC */
+  .tocard{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.5rem;cursor:pointer;padding:.3rem}
+  .tocard img{width:clamp(88px,9vw,132px);height:clamp(88px,9vw,132px);border-radius:50%;object-fit:cover;box-shadow:0 12px 28px rgba(60,58,53,.18);transition:transform .22s;background:#e7e2da}
+  .tocard:hover img{transform:translateY(-5px)}
+  .tocard .tn{font-family:var(--serif);font-size:.82rem;color:var(--accent-d);font-weight:600;letter-spacing:.08em}
+  .tocard h4{font-family:var(--serif);font-size:clamp(.98rem,1.25vw,1.18rem);color:var(--ink);font-weight:600;line-height:1.2}
+  .frame{position:relative;background:transparent;padding:0;border-radius:2px;overflow:visible}
+  .frame img,.frame video{display:block;width:100%;height:100%;object-fit:cover;border-radius:2px;background:#efebe4;box-shadow:0 10px 26px rgba(60,58,53,.12)}
+  .gal{display:flex;flex-wrap:wrap;gap:1.3rem;align-items:flex-end}
+  .gal img{height:var(--gh,26vh);width:auto;object-fit:cover;border-radius:2px;display:block;cursor:zoom-in;box-shadow:0 10px 26px rgba(60,58,53,.12)}
+  .gal video{height:calc(var(--gh) * 1.16);width:auto;border-radius:2px;display:block;box-shadow:0 10px 26px rgba(60,58,53,.12)}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
+  .grid4 .frame img{height:30vh;width:100%;object-fit:cover;cursor:zoom-in}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;width:100%}
+  .card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:1.25rem 1.35rem;box-shadow:0 8px 24px rgba(60,58,53,.05);overflow:hidden}
+  .card .ci{display:block;width:calc(100% + 2.7rem);height:150px;object-fit:cover;object-position:center 28%;margin:-1.25rem -1.35rem 1rem}
+  .card .n{font-family:var(--serif);font-size:1.45rem;font-weight:600;color:var(--accent-d)}
+  .card h3{font-family:var(--serif);font-size:1.2rem;font-weight:600;margin:.15rem 0 .45rem;color:var(--ink)}
+  .card p{font-size:.92rem;line-height:1.6;color:var(--body)}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;width:100%}
+  .stat{background:transparent;text-align:center;padding:.5rem 0;border-top:1px solid var(--line)}
+  .stat .big{font-family:var(--serif);font-size:clamp(2.6rem,5vw,4rem);font-weight:600;color:var(--ink);line-height:1.2;padding-top:.5rem}
+  .stat.accent .big{color:var(--accent-d)}
+  .stat .lab{margin-top:.3rem;color:var(--soft);font-size:.95rem}
+  .vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem;width:100%}
+  .vgrid video{height:25vh;width:100%;object-fit:contain;background:#23211e;border-radius:2px}
+  .vcap{font-size:.85rem;color:var(--soft);margin:.45rem .1rem 0;text-align:center}
+  .vsplit{display:grid;grid-template-columns:1fr 1fr;gap:3vw;width:100%;align-items:center}
+  .vsplit>div:first-child{justify-self:center}
+  .featvid{position:relative}
+  .frame.featvid{display:inline-block;line-height:0}
+  .featvid video{height:50vh;width:auto;max-width:100%;object-fit:contain;display:block;border-radius:2px}
+  .vbadge{position:absolute;top:12px;left:12px;background:rgba(40,38,34,.62);color:#fff;font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:999px;z-index:2;letter-spacing:.04em}
+  .ytwrap{position:relative;width:100%;padding-top:56.25%;border-radius:2px;overflow:hidden;background:#000}
+  .ytwrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  ul.clean{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+  ul.clean li{position:relative;padding-left:1.4rem;font-size:clamp(1rem,1.35vw,1.16rem);line-height:1.55;color:var(--body)}
+  ul.clean li:before{content:"";position:absolute;left:0;top:.62em;width:.45rem;height:.45rem;border-radius:50%;background:var(--accent)}
+  .pill{display:flex;flex-wrap:wrap;gap:.6rem}
+  .pill span{display:inline-block;background:#f3eee6;color:#857d72;border-radius:2px;padding:.32rem .8rem;font-size:.82rem;font-weight:700;letter-spacing:.02em}
+  .info{display:inline-flex;align-items:center;justify-content:center;width:1.2rem;height:1.2rem;border:1.5px solid var(--accent);color:var(--accent-d);background:transparent;border-radius:50%;font-size:.74rem;font-weight:800;line-height:1;cursor:help;vertical-align:middle;margin-left:.3rem;font-family:inherit;padding:0}
+  .info:hover{background:var(--accent);color:#fff}
+  .more{display:inline-flex;align-items:center;border:1px solid var(--accent);color:var(--accent-d);background:transparent;border-radius:999px;padding:.12rem .66rem;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;margin-left:.4rem;vertical-align:middle}
+  .more:hover{background:var(--accent);color:#fff}
+  #tip{position:fixed;z-index:140;max-width:330px;background:#3c3a35;color:#fff;padding:.7rem .9rem;border-radius:6px;font-size:.9rem;line-height:1.55;box-shadow:0 14px 32px rgba(0,0,0,.28);display:none;pointer-events:none}
+  #tip b{color:#e8d9bf;display:block;margin-bottom:.25rem;font-size:.84rem}
+  #info{position:fixed;inset:0;background:rgba(60,58,53,.4);display:none;align-items:center;justify-content:center;z-index:130;padding:5vw;backdrop-filter:blur(3px)}
+  #info.on{display:flex}
+  #info .box{background:#fff;color:var(--ink);max-width:600px;border-radius:10px;padding:2.1rem 2.1rem 1.7rem;box-shadow:0 30px 80px rgba(0,0,0,.3);position:relative;max-height:84vh;overflow:auto}
+  #info .box img.story{width:100%;height:230px;object-fit:cover;border-radius:8px;margin-bottom:1rem;background:#f3eee6}
+  #info .box .scap{font-size:.82rem;color:var(--soft);margin:-.6rem 0 1rem;text-align:center}
+  #info .box h3{font-family:var(--serif);font-size:1.6rem;font-weight:600;color:var(--ink);margin-bottom:.7rem}
+  #info .box p{font-size:1rem;line-height:1.7;color:var(--body)}
+  #info .box p+p{margin-top:.7rem}
+  #info .box b{color:var(--accent-d)}
+  #info .x{position:absolute;top:1rem;right:1.1rem;border:none;background:transparent;font-size:1.4rem;cursor:pointer;color:var(--soft)}
+  #bar{position:fixed;left:0;right:0;bottom:0;height:3px;background:rgba(60,58,53,.08);z-index:40}
+  #barf{height:100%;width:0;background:var(--accent);transition:width .4s}
+  #dots{position:fixed;bottom:52px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:50;max-width:78vw;flex-wrap:wrap;justify-content:center}
+  #dots b{width:7px;height:7px;border-radius:50%;background:rgba(60,58,53,.2);cursor:pointer;transition:.2s}
+  #dots b.on{background:var(--accent-d);transform:scale(1.4)}
+  .navbtn{position:fixed;top:50%;transform:translateY(-50%);z-index:50;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.7);color:var(--ink);font-size:1.3rem;cursor:pointer;backdrop-filter:blur(4px)}
+  .navbtn:hover{background:#fff}#prev{left:16px}#next{right:16px}
+  #num{position:fixed;bottom:14px;right:22px;z-index:50;font-size:.8rem;font-weight:600;color:var(--soft);letter-spacing:.05em}
+  #tabs{position:fixed;top:14px;right:18px;z-index:95;display:flex;gap:3px;background:#fff;padding:4px;border-radius:999px;box-shadow:0 6px 18px rgba(60,58,53,.12);border:1px solid var(--line)}
+  #tabs button{border:none;background:transparent;color:var(--soft);font-weight:700;font-size:.78rem;padding:.4rem .9rem;border-radius:999px;cursor:pointer;font-family:inherit}
+  #tabs button.on{background:var(--accent);color:#fff}
+  #lb{position:fixed;inset:0;background:rgba(248,244,240,.96);display:none;align-items:center;justify-content:center;z-index:120;cursor:zoom-out}
+  #lb.on{display:flex}#lb img{max-width:92vw;max-height:92vh;border-radius:3px;box-shadow:0 24px 60px rgba(60,58,53,.3)}
+  #ov{position:fixed;inset:0;background:#faf6f0;z-index:100;display:none;grid-template-columns:repeat(4,1fr);gap:12px;padding:64px 26px 26px;overflow:auto}
+  #ov.on{display:grid}
+  #ov .t{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--ink);cursor:pointer;font-size:.92rem;min-height:74px;display:flex;align-items:center;gap:13px;transition:transform .15s,border-color .15s}
+  #ov .t:hover{border-color:var(--accent);transform:translateY(-2px)}
+  #ov .t img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none;box-shadow:0 6px 16px rgba(60,58,53,.16);background:#e7e2da}
+  #ov .t b{display:block;font-family:var(--serif);color:var(--accent-d);font-size:1.1rem;margin-bottom:1px}
+  #ov .t .ovx{display:flex;flex-direction:column;line-height:1.25}
+  #ovh{position:fixed;top:18px;left:26px;z-index:101;font-family:var(--serif);font-size:1.2rem;color:var(--ink);display:none}
+  #ov.on ~ #ovh{display:block}
+  #gallery{position:fixed;inset:0;background:#fff;z-index:80;display:none;overflow:auto;padding:66px 5vw 80px}
+  #gallery.on{display:block}
+  #gallery h2{font-family:var(--serif);color:var(--ink);max-width:1200px;margin:0 auto .3rem}
+  #gallery .sub{color:var(--soft);max-width:1200px;margin:0 auto 1.5rem;font-size:.95rem}
+  #gwrap{max-width:1200px;margin:0 auto;column-count:4;column-gap:16px}
+  #gwrap img{width:100%;margin:0 0 16px;border-radius:2px;cursor:zoom-in;display:block;break-inside:avoid;box-shadow:0 8px 20px rgba(60,58,53,.1)}
+  @media(max-width:1100px){#gwrap{column-count:3}}
+  @media(max-width:760px){#gwrap{column-count:2}.split,.split.rev,.vsplit{grid-template-columns:1fr;gap:1.4rem}.cards,.stats,.vgrid{grid-template-columns:1fr 1fr}.grid4{grid-template-columns:1fr 1fr}.hero img{max-width:84vw;max-height:38vh}}
+</style>
+</head>
+<body data-theme="editorial">
+<div id="deck">
+
+  <section class="slide light" data-t="표지">
+    <div class="lay-swatch">
+      <div class="col" style="gap:1.5rem">
+        <div class="kicker r r1">ISTANBUL · CAPPADOCIA</div>
+        <h1 class="serif r r2">고양이 공화국,<br>튀르키예</h1>
+        <p class="lead r r3" style="max-width:32ch">3월 말, 길 위에서 만난 고양이들 — 도시가 통째로 ‘집사’가 된 나라의 기록.</p>
+        <p class="muted r r4">bb.tan · 튀르키예 여행 기록</p>
+      </div>
+      <div class="swatches r r3">
+        <span style="background:var(--pink)"></span>
+        <span class="ph"><img src="assets/img/2568_창가고양이_회색2.jpg"></span>
+        <span style="background:var(--peach)"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide light" data-t="목차">
+    <div class="col" style="width:100%;justify-content:flex-start">
+      <div class="kicker kline r r1">CONTENTS</div>
+      <div class="shead r r1" style="margin:.2rem 0 1.1rem">오늘의 이야기</div>
+      <div id="toc" class="r r2" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.7rem 1.2rem;width:100%"></div>
+      <p class="muted r r3" style="margin-top:1.1rem">썸네일을 누르면 해당 장면으로 바로 이동해요.</p>
+    </div>
+  </section>
+
+  <section class="slide dark" data-t="왜 많을까">
+    <div class="col" style="width:100%;justify-content:flex-start">
+      <div class="kicker kline r r1">WHY SO MANY</div>
+      <div class="shead r r1" style="margin:.3rem 0 .1rem">왜 이렇게 많을까?</div>
+      <p class="lead r r2" style="color:var(--accent-d);margin-bottom:.7rem">우연이 아니라 — 교역·종교·제국이 함께 만든 풍경</p>
+      <div class="rows r r3">
+        <div class="erow"><div class="rn">01</div><img class="rimg" src="assets/img/0062_카페_턱시도고양이2.jpg" style="object-position:center 20%"><div class="rt"><h3>교역과 쥐잡이</h3><p>배를 타고 들어와, 목조 도시를 지킨 고양이</p></div><span></span></div>
+        <div class="erow"><div class="rn">02</div><img class="rimg" src="assets/img/2569_창가_회색_c.jpg" style="object-position:center 52%"><div class="rt"><h3>이슬람의 사랑</h3><p>예언자 무함마드가 아낀 ‘깨끗한 동물’</p></div><span></span></div>
+        <div class="erow"><div class="rn">03</div><img class="rimg" src="assets/img/1763_무릎위_고양이.jpg" style="object-position:center 22%"><div class="rt"><h3>오스만의 포용</h3><p>길동물을 ‘제도’로 돌본 제국의 전통</p></div><span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide light flush" data-t="교역·쥐잡이">
+    <div class="lay-bleed">
+      <div class="bleedimg r r2" style="--pastel:var(--blue)"><img src="assets/img/1434_길거리_주황고양이.jpg"></div>
+      <div class="col txt">
+        <div class="bignum r r1">01</div>
+        <div class="kicker r r1">이유 ① · 교역과 쥐잡이</div>
+        <h2 class="serif r r2">배를 타고 들어온<br>‘도시의 방역’</h2>
+        <p class="r r3">비잔틴·로마 시대부터 고양이는 무역선을 타고 들어와, 배와 곡식 창고의 쥐를 잡았어요. 향신료·비단 교역이 커질수록 항구도시 이스탄불에 더 많이 자리잡았어요.</p>
+        <p class="r r4">중세 유럽이 고양이를 ‘불길하다’며 없앤 탓에 <span class="em">페스트</span>로 고생할 때, 이스탄불은 고양이를 곁에 둬 피해가 덜했어요. 오스만의 집은 대부분 <span class="em">목조</span>라, 쥐 잡는 고양이는 꼭 필요한 동료였죠.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide light flush" data-t="이슬람">
+    <div class="lay-bleed rev">
+      <div class="col txt">
+        <div class="bignum r r1">02</div>
+        <div class="kicker r r1">이유 ② · 이슬람</div>
+        <h2 class="serif r r2">예언자가 아낀<br>‘깨끗한 동물’</h2>
+        <p class="r r3">무함마드<button class="info" data-k="muhammad">이게 뭐예요?</button>가 기도하러 가려는데, 고양이 ‘무에자’가 옷소매에서 잠들어 버렸대요. 깨우기 싫어 소매를 잘라내고 갔다는 일화가 전해져요.</p>
+        <p class="r r4">하디스<button class="info" data-k="hadith">?</button>에도 “고양이는 부정하지 않다”는 말이 남아 있어요. <span class="em">깨끗한 동물</span>이라 집과 사원 안에도 들어올 수 있었고, 복(바라카)을 나르는 존재로 사랑받았죠.</p>
+        <p class="muted r r4" style="font-size:.82em">※ ‘무에자’ 일화는 널리 사랑받지만, 정통 사료로 확증되진 않은 전승.</p>
+      </div>
+      <div class="bleedimg r r2" style="--pastel:var(--pink)"><img src="assets/img/2569_창가_회색_c.jpg"></div>
+    </div>
+  </section>
+
+  <section class="slide light flush" data-t="오스만">
+    <div class="lay-bleed">
+      <div class="bleedimg r r2" style="--pastel:var(--peach)"><img src="assets/img/1763_무릎위_고양이.jpg"></div>
+      <div class="col txt">
+        <div class="bignum r r1">03</div>
+        <div class="kicker r r1">이유 ③ · 오스만의 포용</div>
+        <h2 class="serif r r2">길동물을 ‘제도’로<br>돌본 제국</h2>
+        <p class="r r3">오스만 제국<button class="info" data-k="ottoman">이게 뭐예요?</button>은 이 정서를 제도로 만들었어요. <span class="em">‘만자즈’</span>라는 길고양이 먹이 주는 직업이 있었고, 자선재단 <span class="em">‘바키프’</span>가 겨울철 길동물 급식·보호를 맡았죠.</p>
+        <p class="r r4">부르사엔 다친 새와 길동물을 돌보는 ‘<span class="em">구라바하네-이 라클라칸</span>’<button class="info" data-k="laklakan">?</button>까지 세웠는데, <span class="em">세계 최초의 동물병원</span>으로 꼽혀요. 압뒬하미트 2세<button class="info" data-k="abdulhamid">?</button>는 궁에 <span class="em">고양이 1,500마리</span>를 둔 ‘찐’ 애묘가였어요.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide cream flush" data-t="숫자">
+    <div class="lay-mag rev">
+      <div class="mag-body">
+        <div class="kicker kline r r1">BY THE NUMBERS</div>
+        <h2 class="serif r r1" style="margin:.2rem 0 .7rem">숫자로 보는 ‘캣스탄불’</h2>
+        <div class="figs r r2">
+          <div class="efig"><div class="fb">125,000</div><div class="fl">이스탄불 길고양이 추정 (약)</div></div>
+          <div class="efig"><div class="fb">200,000</div><div class="fl">집고양이까지 포함 (약)</div></div>
+          <div class="efig accent"><div class="fb">0</div><div class="fl">원칙 · 살처분도, 포획도 없음</div></div>
+        </div>
+      </div>
+      <div class="mag-panel r r3" style="--pastel:var(--mint)">
+        <div class="shead">그냥,<br>함께 살기.</div>
+        <p style="color:var(--body);font-size:clamp(1.08rem,1.5vw,1.34rem);line-height:1.75">많은 시민이 길고양이를 ‘<span class="em">공동으로 키우는 동네 고양이</span>’로 여겨요. 그저 함께 사는 공동체로 인식해요!</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide dark" data-t="유명 고양이">
+    <div class="col" style="width:100%;justify-content:flex-start">
+      <div class="kicker kline r r1">FUN · 인터넷이 사랑한 고양이</div>
+      <div class="shead r r1" style="margin:.2rem 0 1.2rem">알고 보니, 스타들</div>
+      <div class="r r2" style="display:grid;grid-template-columns:repeat(3,1fr);gap:3vw;width:100%;align-items:start">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:.45rem">
+          <img src="assets/img/2573_창가고양이_태비.jpg" style="width:clamp(120px,14vw,190px);height:clamp(120px,14vw,190px);border-radius:50%;object-fit:cover;object-position:center 30%;box-shadow:0 16px 36px rgba(60,58,53,.22)">
+          <div class="serif" style="font-size:clamp(1.3rem,1.9vw,1.6rem);color:var(--ink);font-weight:600">글리 · Gli</div>
+          <div class="kicker">아야소피아<button class="info" data-k="hagia">?</button>의 주인</div>
+          <p style="font-size:.92rem">2004년부터 16년간 아야소피아의 터줏대감. <span class="em">오바마 대통령</span>도 쪼그려 앉아 쓰다듬고 갔죠. 2020년 무지개다리를 건넜어요.</p>
+          <button class="goto" data-go="글리 · Gli">이야기 더 보기 →</button>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:.45rem">
+          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Tombili_the_cat_n1.jpg" onerror="this.onerror=null;this.src='assets/img/2114_늘어진_태비1.jpg'" style="width:clamp(120px,14vw,190px);height:clamp(120px,14vw,190px);border-radius:50%;object-fit:cover;box-shadow:0 16px 36px rgba(60,58,53,.22)">
+          <div class="serif" style="font-size:clamp(1.3rem,1.9vw,1.6rem);color:var(--ink);font-weight:600">톰빌리 · Tombili</div>
+          <div class="kicker">월드클래스 ‘느긋함’</div>
+          <p style="font-size:.92rem">팔꿈치 괴고 누운 짤로 세계적 밈이 된 고양이. 2016년 세상을 뜨자 시에서 <span class="em">동상</span>까지 — 한 달 만에 도난 소동도!</p>
+          <button class="goto" data-go="톰빌리 · Tombili">이야기 더 보기 →</button>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:.45rem">
+          <img src="assets/img/2566_창가고양이_둘.jpg" style="width:clamp(120px,14vw,190px);height:clamp(120px,14vw,190px);border-radius:50%;object-fit:cover;object-position:center 42%;box-shadow:0 16px 36px rgba(60,58,53,.22)">
+          <div class="serif" style="font-size:clamp(1.3rem,1.9vw,1.6rem);color:var(--ink);font-weight:600">모스크 고양이</div>
+          <div class="kicker">예배 중에도 환영</div>
+          <p style="font-size:.92rem">한 이맘은 추운 겨울 길고양이를 예배 중에도 모스크 안으로. 엄마가 새끼를 설교단에 올린 사진이 <span class="em">10억 클릭+</span>.</p>
+          <button class="goto" data-go="모스크 고양이">이야기 더 보기 →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide light" data-t="글리 · Gli">
+    <div style="display:grid;grid-template-columns:1.05fr 1fr;gap:3.5vw;width:100%;height:100%;align-items:center">
+      <div class="col" style="justify-content:center;gap:.75rem">
+        <div class="kicker kline r r1">STAR CAT 01 · 아야소피아의 고양이</div>
+        <h2 class="serif r r1" style="margin:.05rem 0">글리 <span style="color:var(--accent-d)">Gli</span></h2>
+        <p class="lead r r2" style="color:var(--accent-d)">16년을 그 자리에서 — 아야소피아<button class="info" data-k="hagia">?</button>의 터줏대감</p>
+        <p class="r r3">이름은 튀르키예어로 ‘<span class="em">사랑의 결합</span>’이라는 뜻. 2004년, 1,500년 된 아야소피아에서 태어나 그곳에서만 16년을 살았어요. 인스타그램 팔로워는 12만 명을 넘겼어요.</p>
+        <p class="r r3">결정적 장면은 <span class="em">2009년</span> — 방문한 <span class="em">오바마 대통령</span>이 쪼그려 앉아 글리를 쓰다듬은 거예요. 그 사진이 퍼지며 ‘관광객보다 유명한 고양이’가 됐죠.</p>
+        <p class="r r4">2020년 11월, 16살로 세상을 떠나 <span class="em">아야소피아 안뜰에 묻혔어요.</span> 살아서도 죽어서도 그 건물의 일부가 된 셈.</p>
+      </div>
+      <div class="frame r r2"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Hagia_Sophia_Cat_Gli.png" onerror="this.onerror=null;this.src='assets/img/2573_창가고양이_태비.jpg'" style="width:100%;height:60vh;object-fit:cover;border-radius:2px"><div class="vcap">아야소피아의 고양이 ‘글리’ · 위키미디어 커먼즈</div></div>
+    </div>
+  </section>
+
+  <section class="slide light" data-t="톰빌리 · Tombili">
+    <div style="display:grid;grid-template-columns:1fr 1.05fr;gap:3.5vw;width:100%;height:100%;align-items:center">
+      <div class="frame r r2"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Tombili_the_cat_n1.jpg" onerror="this.onerror=null;this.src='assets/img/2114_늘어진_태비1.jpg'" style="width:100%;height:60vh;object-fit:cover;border-radius:2px"><div class="vcap">톰빌리 추모 동상, 카드쾨이 · 위키미디어 커먼즈</div></div>
+      <div class="col" style="justify-content:center;gap:.75rem">
+        <div class="kicker kline r r1">STAR CAT 02 · 카드쾨이</div>
+        <h2 class="serif r r1" style="margin:.05rem 0">톰빌리 <span style="color:var(--accent-d)">Tombili</span></h2>
+        <p class="lead r r2" style="color:var(--accent-d)">세상에서 가장 편한 자세의 전설</p>
+        <p class="r r3">‘통통이’라는 뜻. 인도 턱에 팔꿈치를 괴고 사람처럼 비스듬히 누운 사진 한 장으로 <span class="em">2016년 전 세계 밈</span>이 됐어요.</p>
+        <p class="r r3">그해 8월 세상을 뜨자, 조각가가 그 포즈 그대로 <span class="em">동상</span>을 세워 ‘세계 동물의 날’에 제막했죠. 부시장이 연설하고 수백 명이 모였어요.</p>
+        <p class="r r4">그런데 한 달 뒤 동상이 <span class="em">사라졌다가</span>, SNS가 들끓자 누군가 슬쩍 도로 갖다 놨어요. 고양이 동상 하나가 도시를 들썩이게 한 사건.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide light" data-t="모스크 고양이">
+    <div style="display:grid;grid-template-columns:1.05fr 1fr;gap:3.5vw;width:100%;height:100%;align-items:center">
+      <div class="col" style="justify-content:center;gap:.75rem">
+        <div class="kicker kline r r1">STAR CAT 03 · 위스퀴다르</div>
+        <h2 class="serif r r1" style="margin:.05rem 0">모스크의 고양이들</h2>
+        <p class="lead r r2" style="color:var(--accent-d)">이맘 무스타파 에페와 ‘예배 중의 손님’</p>
+        <p class="r r3">위스퀴다르의 <span class="em">아지즈 마흐무드 휘다이 모스크</span>. 이맘 무스타파 에페는 추운 겨울, 길고양이들이 얼지 않게 예배 시간에도 모스크 문을 열어 안으로 들였어요.</p>
+        <p class="r r3">그가 올린 영상엔 <span class="em">엄마 고양이가 새끼를 한 마리씩 물고 ‘민바르(설교단)’ 계단을 오르는</span> 장면이 있어요. 이맘이 설교하는 자리에 고양이 가족이 자리 잡은 거죠 — 전 세계로 퍼졌어요.</p>
+        <p class="r r4">이맘은 말해요. “고양이들은 예배 중에도 우리와 함께 있어요. 신자들도 좋아해요.” 지금도 그 모스크엔 열 마리쯤 산대요.</p>
+      </div>
+      <div class="frame r r2"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Sleeping_Cat_in_Istanbul.jpg" onerror="this.onerror=null;this.src='assets/img/2566_창가고양이_둘.jpg'" style="width:100%;height:60vh;object-fit:cover;border-radius:2px"><div class="vcap">이스탄불 모스크 곁의 고양이 · 위키미디어 커먼즈</div></div>
+    </div>
+  </section>
+
+  <section class="slide light" data-t="복시리우스">
+    <div class="col" style="width:100%;justify-content:flex-start">
+      <div class="kicker kline r r1">EPISODE 1 · 카파도키아<button class="info" data-k="cappadocia">?</button></div>
+      <div class="shead r r1" style="margin:.1rem 0 .7rem">우리 방에 눌러앉은 ‘복시리우스’</div>
+      <div class="r r2" style="display:grid;grid-template-columns:0.8fr 1fr 1fr;gap:2.4vw;width:100%;align-items:center;margin-top:.3rem">
+        <div class="frame featvid" style="justify-self:center"><span class="vbadge">▶ 영상</span><video src="assets/vid/sofa_tabby.mp4" muted loop playsinline style="height:58vh"></video></div>
+        <div class="col" style="gap:1.1rem;justify-content:center">
+          <p style="font-size:clamp(1.06rem,1.55vw,1.32rem)"><span class="em">복실이 같다고 ‘복시리우스’.</span> 카파도키아 동굴 호텔에서, 우리 방에 상주 고양이가 생겼어요.</p>
+          <ul class="clean" style="font-size:clamp(1.05rem,1.45vw,1.22rem)"><li>시궁창(?) 냄새가 아주 강렬</li><li>다른 고양이는 다 쫓아내는 텃세왕</li><li>밤새 우리 방에서 동침</li></ul>
+        </div>
+        <div class="grid2" style="gap:.8rem">
+          <div class="frame"><img src="assets/img/1543_호텔_복시리우스_테이블.jpg" style="height:27vh;width:100%;object-fit:cover"></div>
+          <div class="frame"><img src="assets/img/1550_호텔_복시리우스_소파.jpg" style="height:27vh;width:100%;object-fit:cover"></div>
+          <div class="frame"><img src="assets/img/2114_늘어진_태비1.jpg" style="height:27vh;width:100%;object-fit:cover"></div>
+          <div class="frame"><img src="assets/img/1545_호텔_복시리우스_b.jpg" style="height:27vh;width:100%;object-fit:cover"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide light" data-t="식탁의 손님">
+    <div style="display:grid;grid-template-columns:0.82fr 1.18fr;gap:3vw;width:100%;align-items:center">
+      <div class="col">
+        <div class="kicker kline r r1">EPISODE 2</div>
+        <h2 class="serif r r1" style="margin:.2rem 0 .3rem">식탁 위의 손님</h2>
+        <p class="r r2"><span class="em">이스탄불 첫날 저녁, 식당 테이블에 떡하니 앉아 있던 턱시도 고양이.</span> 사람 자리에 같이 앉아, 밥 먹는 우리를 빤히 봤어요.</p>
+        <p class="r r3">여기 고양이들은 사람 음식에 거리낌이 없어요. 나중엔 카페에서 크루아상을 슬쩍 한 입 가져갈 정도였죠. (그 순간은 못 찍었어요!)</p>
+        <p class="muted r r4">고양이도 사람도, 서로를 ‘우리 동네 식구’로 여기는 분위기.</p>
+      </div>
+      <div class="cluster r r2" style="--pastel:var(--blue);height:70vh">
+        <div class="cb"></div>
+        <img class="c1" src="assets/img/0062_카페_턱시도고양이2.jpg">
+        <img class="c2" src="assets/img/0063_카페_턱시도고양이3.jpg">
+        <img class="c3" src="assets/img/0060_카페_턱시도고양이.jpg">
+      </div>
+    </div>
+  </section>
+
+  <section class="slide dark" data-t="몇 마리야">
+    <div style="display:grid;grid-template-columns:0.72fr 1.28fr;gap:3vw;width:100%;align-items:center">
+      <div class="col">
+        <div class="kicker kline r r1">EVERYWHERE</div>
+        <div class="shead r r1" style="margin:.2rem 0 .5rem">도대체,<br>몇 마리야?</div>
+        <p class="lead r r2" style="color:var(--accent-d)">창가에, 계단에, 골목마다<br>— 어디를 봐도 고양이.</p>
+      </div>
+      <div class="grid4 r r2" style="grid-template-columns:repeat(3,1fr);gap:1rem">
+        <div class="frame"><img src="assets/img/2563_창가고양이_회색.jpg" style="height:32vh"></div>
+        <div class="frame"><img src="assets/img/2566_창가고양이_둘.jpg" style="height:32vh"></div>
+        <div class="frame"><img src="assets/img/1767_삼색이_돌계단.jpg" style="height:32vh"></div>
+        <div class="frame"><img src="assets/img/2102_밤계단_복슬_b.jpg" style="height:32vh"></div>
+        <div class="frame"><img src="assets/img/2100_밤계단_복슬_a.jpg" style="height:32vh"></div>
+        <div class="frame"><img src="assets/img/2573_창가고양이_태비.jpg" style="height:32vh"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide light" data-t="낚시꾼과 고양이">
+    <div class="col" style="width:100%;justify-content:flex-start">
+      <div class="kicker kline r r1">EPISODE 3 · 보스포루스<button class="info" data-k="bosphorus">?</button> 부둣가</div>
+      <h2 class="serif r r1" style="margin:.2rem 0 .3rem">낚시꾼 곁엔, 늘 고양이</h2>
+      <div class="r r2" style="display:grid;grid-template-columns:0.8fr 1fr 1fr;gap:2.4vw;width:100%;align-items:center;margin-top:.3rem">
+        <div class="frame featvid" style="justify-self:center"><span class="vbadge">▶ 영상</span><video src="assets/vid/street_fish_cat.mp4" muted loop playsinline style="height:58vh"></video></div>
+        <div class="col" style="gap:1.1rem;justify-content:center">
+          <p style="font-size:clamp(1.06rem,1.55vw,1.32rem)">보스포루스 부둣가엔 낚시하는 사람이 가득해요. 그 곁엔 어김없이 고양이가 앉아 기다리고 있죠. 잡은 생선을 던져주면 — <span class="em">그 자리에서 받아 먹는 고양이.</span></p>
+          <p class="muted">실제로 본 풍경 — 낚싯대 옆 작은 생선 한 마리에, 고양이 두세 마리가 모여들어요.</p>
+        </div>
+        <div class="grid2" style="gap:.8rem">
+          <div class="frame"><img src="assets/img/fish/fish_01.jpg" style="height:27vh;width:100%;object-fit:cover"></div>
+          <div class="frame"><img src="assets/img/fish/fish_05.jpg" style="height:27vh;width:100%;object-fit:cover"></div>
+          <div class="frame"><img src="assets/img/fish/fish_03.jpg" style="height:27vh;width:100%;object-fit:cover"></div>
+          <div class="frame"><img src="assets/img/fish/fish_02.jpg" style="height:27vh;width:100%;object-fit:cover"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide cream flush" data-t="공존">
+    <div class="lay-mag">
+      <div class="mag-panel r r1" style="--pastel:var(--peach)">
+        <div class="kicker kline">사람과 고양이</div>
+        <div class="shead">같이 먹고,<br>안고,<br>쓰다듬기</div>
+        <p style="color:var(--body)">램프 만들기 체험 때 “사람 음식 먹어도 되냐” 물었더니 — <span class="em">“여기 고양이들은 다 사람화(humanize)돼서 빵이든 우유든 잘 먹어요.”</span> 한국의 비둘기처럼, 도시 일상에 녹아든 셈.</p>
+      </div>
+      <div class="mag-body">
+        <p class="r r2">밥그릇은 길마다 놓여 있고, 무릎 위에 올라오고, 처음 본 사람 품에도 쏙 안기는 고양이들.</p>
+        <div class="grid2 r r3">
+          <div class="frame"><img src="assets/img/1759_밥그릇_먹는고양이.jpg" style="height:25vh;width:100%;object-fit:cover"></div>
+          <div class="frame"><img src="assets/img/1763_무릎위_고양이.jpg" style="height:25vh;width:100%;object-fit:cover"></div>
+          <div class="frame"><img src="assets/img/1186_해변_시민이안은고양이_real.jpg" style="height:25vh;width:100%;object-fit:cover"></div>
+          <div class="frame"><img src="assets/img/1766_삼색이_밥그릇.jpg" style="height:25vh;width:100%;object-fit:cover"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide dark" data-t="영상">
+    <div class="col" style="width:100%;justify-content:flex-start">
+      <div class="kicker kline r r1">VIDEO · 살아 움직이는 도시</div>
+      <div class="shead r r1" style="margin:.2rem 0 .3rem">길 위의 고양이들, 영상으로</div>
+      <div class="vgrid r r2" style="margin-top:.5rem">
+        <div><div class="frame"><video src="assets/vid/street_fish_cat.mp4" muted loop playsinline controls></video></div><div class="vcap">이스탄불 거리의 삼색이</div></div>
+        <div><div class="frame"><video src="assets/vid/sandpath_cat.mp4" muted loop playsinline controls></video></div><div class="vcap">카파도키아 모래길 고양이</div></div>
+        <div><div class="frame"><video src="assets/vid/hotel_tabby.mp4" muted loop playsinline controls></video></div><div class="vcap">호텔의 은빛 태비</div></div>
+        <div><div class="frame"><video src="assets/vid/sofa_tabby.mp4" muted loop playsinline controls></video></div><div class="vcap">소파 위 복시리우스</div></div>
+        <div><div class="frame"><video src="assets/vid/tortie_closeup.mp4" muted loop playsinline controls></video></div><div class="vcap">삼색 고양이 클로즈업</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide light" data-t="도시가 돌본다">
+    <div class="col" style="width:100%;justify-content:flex-start">
+      <div class="kicker kline r r1">도시가 돌본다</div>
+      <div class="shead r r1" style="margin:.2rem 0 .6rem">이제는 ‘시스템’이 함께</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3vw;width:100%;align-items:start">
+        <div class="rows r r2" id="cityList">
+          <div class="crow" data-k="vetbus"><button class="citybtn">자세히</button><div class="rn">01</div><div class="rt"><h3>VetBus 이동병원</h3><p>동네를 도는 이동식 동물병원.</p></div></div>
+          <div class="crow" data-k="tnvr"><button class="citybtn">자세히</button><div class="rn">02</div><div class="rt"><h3>TNVR</h3><p>잡지 않고, 중성화·백신 후 제자리로.</p></div></div>
+          <div class="crow" data-k="feeding"><button class="citybtn">자세히</button><div class="rn">03</div><div class="rt"><h3>하루 1톤 급식</h3><p>숲·골목 곳곳의 매일 공동 급식.</p></div></div>
+          <div class="crow" data-k="law"><button class="citybtn">자세히</button><div class="rn">04</div><div class="rt"><h3>2021 동물보호법</h3><p>‘상품 아닌 생명’으로 못 박은 제도.</p></div></div>
+        </div>
+        <div id="cityPanel" class="r r3"></div>
+      </div>
+      <p class="muted r r4" style="margin-top:.7rem">민관 협력 — 동물권 연합 <b>HAYTAP</b> 같은 NGO가 지자체와 함께 TNVR·구조를 운영해요. <span style="opacity:.7">왼쪽 항목을 누르면 오른쪽에 자세히 나와요.</span></p>
+    </div>
+  </section>
+
+  <section class="slide cream" data-t="한국과 뭐가 다를까">
+    <div class="col" style="width:100%;justify-content:flex-start">
+      <div class="kicker kline r r1">KOREA vs TÜRKİYE</div>
+      <h2 class="serif r r1" style="margin:.2rem 0 .2rem">TNR은 한국도 한다 — 그런데 뭐가 다를까?</h2>
+      <p class="r r2" style="max-width:84ch">포획–중성화–방사(TNR)라는 ‘기술’ 자체는 한국을 비롯해 여러 나라가 해요. 튀르키예의 진짜 차이는 기술이 아니라, 그걸 둘러싼 <span class="em">도시 전체의 공존 문화</span>예요.</p>
+      <div class="cards r r3" style="grid-template-columns:repeat(4,1fr);margin-top:.6rem">
+        <div class="card"><div class="n">문화</div><h3>천 년의 뿌리</h3><p>‘관리할 떠돌이’가 아니라, 천 년 전부터 받아들여진 ‘도시의 주민’이에요.</p></div>
+        <div class="card"><div class="n">공존</div><h3>실내까지 환영</h3><p>가게·카페·사원·집 안까지 드나들고, 동네가 다 같이 먹이는 ‘동네 고양이’.</p></div>
+        <div class="card"><div class="n">참여</div><h3>급식 자판기까지</h3><p>빈 병 넣으면 사료가 나오는 자판기(Pugedon)·벳버스·하루 1톤 급식. <button class="more" data-s="pugedon">더 보기</button></p></div>
+        <div class="card"><div class="n">규범</div><h3>‘제거’ 아닌 ‘공존’</h3><p>없애는 게 기본이 아니라, 함께 사는 게 디폴트(2021 동물보호법).</p></div>
+      </div>
+      <p class="r r4" style="margin-top:.9rem;font-weight:800;font-size:clamp(1.05rem,1.7vw,1.4rem);color:var(--head)">한 줄 요약 — 한국은 ‘TNR(기술)’을, 튀르키예는 ‘<span class="em">TNR을 품은 공존 문화</span>’를 해요.</p>
+    </div>
+  </section>
+
+  <section class="slide dark" data-t="다큐 케디">
+    <div class="col" style="width:100%;justify-content:flex-start">
+      <div class="kicker kline r r1">DOCUMENTARY · 2016</div>
+      <h2 class="serif r r1" style="margin:.2rem 0 .2rem">이스탄불을 세계에 알린 다큐 ‘케디’</h2>
+      <div class="split" style="margin-top:.5rem;align-items:center">
+        <div class="frame r r2" style="display:flex;align-items:center;justify-content:center;background:#f3eee6;border-radius:2px"><img src="https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&amp;fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F991A16415C30A13601" style="max-width:100%;max-height:50vh;width:auto;object-fit:contain;border-radius:2px" onerror="this.onerror=null;this.src='assets/img/1434_길거리_주황고양이.jpg'"></div>
+        <div class="col" style="gap:.65rem">
+          <p class="serif r r2" style="font-size:clamp(1.1rem,1.6vw,1.42rem);color:var(--accent-d);border-left:3px solid var(--accent);padding-left:.9rem;line-height:1.5">“고양이가 발밑에서 당신을 올려다보며 야-옹 한다면,<br>그건 삶이 당신에게 미소 짓는 거예요.”</p>
+          <p class="r r3">이스탄불에서 나고 자란 감독 <span class="em">제이다 토룬</span>이, 거리 고양이를 ‘고양이 눈높이’로 따라간 다큐예요. 한국엔 2017년 ‘고양이 케디’로 개봉했죠.</p>
+          <p class="r r3">후보 35마리 중 최종 7마리. 사람이 주인공이 아니라 ‘<span class="em">함께 사는 존재</span>’라는 시선이 전 세계를 울렸어요.</p>
+          <div class="pill r r4"><span>국내개봉 2017.9.21</span><span>로튼토마토 98%</span><span>타임 올해의 영화 10선</span><span>흥행 $5M+</span></div>
+          <p class="muted r r5">예고편은 ‘영상’ 탭에서, 자세한 이야기는 <button class="more" data-s="kedi">제작·평가·이야기 더 보기</button></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide dark" data-t="케디의 7마리">
+    <div class="col" style="width:100%;justify-content:flex-start">
+      <div class="kicker kline r r1">KEDI · 일곱 주인공</div>
+      <div class="shead r r1" style="margin:.2rem 0 .2rem">주인공은, 길고양이 일곱 마리</div>
+      <p class="r r1" style="color:var(--gold)">후보 35마리 → 19마리 촬영 → 최종 7마리. 다 캐릭터가 달라서 보는 재미가 있어요.</p>
+      <div class="kstrip r r2" style="margin:.55rem 0 .2rem">
+        <img class="kstill" src="https://img1.daumcdn.net/thumb/R500x0/?scode=mtistory2&amp;fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F9910123359DD747018" onerror="this.style.display='none'">
+        <img class="kstill" src="https://img1.daumcdn.net/thumb/R500x0/?scode=mtistory2&amp;fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F99702B3359DD78D624" onerror="this.style.display='none'">
+        <img class="kstill" src="https://img1.daumcdn.net/thumb/R500x0/?scode=mtistory2&amp;fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F99C9623359DD78C725" onerror="this.style.display='none'">
+        <img class="kstill" src="https://img1.daumcdn.net/thumb/R500x0/?scode=mtistory2&amp;fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F9948243359DD791021" onerror="this.style.display='none'">
+        <img class="kstill" src="https://img1.daumcdn.net/thumb/R500x0/?scode=mtistory2&amp;fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F99F4E13359DDFD5E04" onerror="this.style.display='none'">
+      </div>
+      <div class="r r2" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin:.3rem 0">
+        <div style="background:var(--card-bg);border-radius:12px;padding:.65rem .8rem;box-shadow:0 6px 16px rgba(0,0,0,.13)"><div style="font-weight:800;color:var(--accent)">사르 <span style="color:var(--muted);font-weight:600;font-size:.74rem">Sarı</span></div><div style="font-size:.82rem;color:var(--ink);line-height:1.35;margin-top:.1rem">새끼 위해 사냥하는 억척 엄마</div></div>
+        <div style="background:var(--card-bg);border-radius:12px;padding:.65rem .8rem;box-shadow:0 6px 16px rgba(0,0,0,.13)"><div style="font-weight:800;color:var(--accent)">두만 <span style="color:var(--muted);font-weight:600;font-size:.74rem">Duman</span></div><div style="font-size:.82rem;color:var(--ink);line-height:1.35;margin-top:.1rem">가게 유리창 톡톡 두드리는 신사</div></div>
+        <div style="background:var(--card-bg);border-radius:12px;padding:.65rem .8rem;box-shadow:0 6px 16px rgba(0,0,0,.13)"><div style="font-weight:800;color:var(--accent)">벵귀 <span style="color:var(--muted);font-weight:600;font-size:.74rem">Bengü</span></div><div style="font-size:.82rem;color:var(--ink);line-height:1.35;margin-top:.1rem">쓰다듬어 달라는 애교쟁이</div></div>
+        <div style="background:var(--card-bg);border-radius:12px;padding:.65rem .8rem;box-shadow:0 6px 16px rgba(0,0,0,.13)"><div style="font-weight:800;color:var(--accent)">아슬란 <span style="color:var(--muted);font-weight:600;font-size:.74rem">Aslan P.</span></div><div style="font-size:.82rem;color:var(--ink);line-height:1.35;margin-top:.1rem">식당 지키는 쥐 사냥꾼</div></div>
+        <div style="background:var(--card-bg);border-radius:12px;padding:.65rem .8rem;box-shadow:0 6px 16px rgba(0,0,0,.13)"><div style="font-weight:800;color:var(--accent)">감스즈 <span style="color:var(--muted);font-weight:600;font-size:.74rem">Gamsız</span></div><div style="font-size:.82rem;color:var(--ink);line-height:1.35;margin-top:.1rem">걱정 없는 동네 한량</div></div>
+        <div style="background:var(--card-bg);border-radius:12px;padding:.65rem .8rem;box-shadow:0 6px 16px rgba(0,0,0,.13)"><div style="font-weight:800;color:var(--accent)">프시코파트 <span style="color:var(--muted);font-weight:600;font-size:.74rem">Psikopat</span></div><div style="font-size:.82rem;color:var(--ink);line-height:1.35;margin-top:.1rem">라이벌 다 쫓는 질투의 여왕</div></div>
+        <div style="background:var(--card-bg);border-radius:12px;padding:.65rem .8rem;box-shadow:0 6px 16px rgba(0,0,0,.13)"><div style="font-weight:800;color:var(--accent)">데니즈 <span style="color:var(--muted);font-weight:600;font-size:.74rem">Deniz</span></div><div style="font-size:.82rem;color:var(--ink);line-height:1.35;margin-top:.1rem">누구와도 친한 시장의 인싸</div></div>
+        <div style="background:rgba(255,255,255,.10);border-radius:12px;padding:.65rem .8rem;display:flex;align-items:center;font-style:italic;font-size:.86rem;color:var(--ink-d)">“고양이는 도시의 영혼”</div>
+      </div>
+      <p class="muted r r3" style="margin-top:.7rem">국내 개봉 땐 ‘사기꾼·돌+냥이·냥블리·애교쟁이·헌터·유냥독존·젠틀맨’으로 소개됐어요 — “사람보다 더 사람 같은 고양이들이 보내는 따뜻한 러브레터”. 각 고양이 곁엔 ‘그를 돌보는 사람들’ 인터뷰가 따라붙죠.</p>
+    </div>
+  </section>
+
+  <section class="slide light flush" data-t="개도 있어요">
+    <div class="lay-bleed rev">
+      <div class="col txt">
+        <div class="kicker kline r r1">그리고</div>
+        <h2 class="serif r r2">개도 있었어요</h2>
+        <p class="r r3">고양이가 주인공이었지만, 길 위엔 느긋한 개들도 함께였어요.</p>
+        <p class="r r4">카펫 위에 늘어진 골든, 모래길에서 마주친 큰 개 — 튀르키예의 환대는 고양이만의 것이 아니었던 거죠.</p>
+      </div>
+      <div class="bleedimg r r2" style="--pastel:var(--lav)"><img src="assets/img/1530_강아지_골든_카펫.jpg"></div>
+    </div>
+  </section>
+
+  <section class="slide dark flush" data-t="마무리">
+    <div class="lay-bleed rev">
+      <div class="col txt">
+        <div class="kicker kline r r1">CLOSING</div>
+        <div class="shead r r2" style="font-size:clamp(2.8rem,6.2vw,5rem);margin:.2rem 0 .3rem">길 위의 모두를<br>환대하는 따뜻함</div>
+        <p class="lead r r3">고양이의 나라에서 배운 건, 결국 ‘함께 사는 법’.</p>
+        <p class="muted r r4">복시리우스, 잘 지내지? — 고마워요 🐈</p>
+      </div>
+      <div class="bleedimg r r2" style="--pastel:var(--pink)"><img src="assets/img/2116_늘어진_태비3.jpg"></div>
+    </div>
+  </section>
+
+</div>
+
+<div id="gallery">
+  <h2>사진 갤러리</h2><div class="sub">여행에서 만난 고양이들 — 클릭하면 크게 볼 수 있어요.</div><div id="gwrap"></div>
+</div>
+<div id="num"></div>
+<button class="navbtn" id="prev">‹</button>
+<button class="navbtn" id="next">›</button>
+<div id="dots"></div>
+<div id="tabs"><button id="tabSlide" class="on">슬라이드</button><button id="tabToc">목차</button><button id="tabGal">갤러리</button></div>
+<div id="bar"><div id="barf"></div></div>
+<div id="lb"><img src=""></div>
+<div id="ov"></div><div id="ovh">목차 — 클릭해서 이동</div>
+<div id="info"><div class="box"><button class="x">×</button><h3 id="infoT"></h3><p id="infoP"></p></div></div>
+<div id="tip"></div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  let i=0;
+  const dots=document.getElementById('dots');
+  slides.forEach((s,k)=>{const b=document.createElement('b');b.onclick=()=>go(k);dots.appendChild(b);});
+  const dotEls=[...dots.children];
+  const ov=document.getElementById('ov'), toc=document.getElementById('toc');
+  const OVIMG=['2568_창가고양이_회색2','1767_삼색이_돌계단','0062_카페_턱시도고양이2','1434_길거리_주황고양이','2569_창가_회색_c','1763_무릎위_고양이','2563_창가고양이_회색','2573_창가고양이_태비','2573_창가고양이_태비','2114_늘어진_태비1','2566_창가고양이_둘','1550_호텔_복시리우스_소파','0060_카페_턱시도고양이','2102_밤계단_복슬_b','fish/fish_01','1759_밥그릇_먹는고양이','2100_밤계단_복슬_a','1766_삼색이_밥그릇','1769_삼색이_소파_a','2569_창가_회색_c','2563_창가고양이_회색','1530_강아지_골든_카펫','2116_늘어진_태비3'].map(n=>'assets/img/'+n+'.jpg');
+  slides.forEach((s,k)=>{
+    const t=document.createElement('div');t.className='t';
+    t.innerHTML='<img src="'+(OVIMG[k]||'')+'" onerror="this.style.display=\'none\'"><div class="ovx"><b>'+(k+1)+'</b>'+(s.dataset.t||'')+'</div>';
+    t.onclick=()=>{go(k);ov.classList.remove('on');};ov.appendChild(t);
+  });
+  const TOCDATA=[
+    [2,'01','왜 많을까','assets/img/0062_카페_턱시도고양이2.jpg','center 20%'],
+    [6,'02','숫자로 본 캣스탄불','assets/img/2563_창가고양이_회색.jpg','center 35%'],
+    [7,'03','스타 고양이','assets/img/2573_창가고양이_태비.jpg','center 30%'],
+    [11,'04','여행 에피소드','assets/img/1550_호텔_복시리우스_소파.jpg','center 35%'],
+    [14,'05','낚시꾼과 고양이','assets/img/fish/fish_01.jpg','center 50%'],
+    [17,'06','도시가 돌본다','assets/img/1766_삼색이_밥그릇.jpg','center 40%'],
+    [19,'07','다큐 ‘케디’','assets/img/2566_창가고양이_둘.jpg','center 42%'],
+    [22,'08','마무리','assets/img/2116_늘어진_태비3.jpg','center 35%']
+  ];
+  if(toc){TOCDATA.forEach(([idx,n,title,img,pos])=>{const c=document.createElement('div');c.className='tocard';
+    c.innerHTML='<img src="'+img+'" style="object-position:'+pos+'"><div class="tn">'+n+'</div><h4>'+title+'</h4>';
+    c.onclick=()=>go(idx);toc.appendChild(c);});}
+  function playVids(s,on){
+    s.querySelectorAll('video').forEach(v=>{if(on){v.play().catch(()=>{});}else{v.pause();}});
+    s.querySelectorAll('iframe[data-src]').forEach(f=>{if(on){if(!f.src)f.src=f.dataset.src;}else{f.src='';}});
+  }
+  function go(n){
+    n=Math.max(0,Math.min(slides.length-1,n));
+    slides[i].classList.remove('active');playVids(slides[i],false);
+    i=n;slides[i].classList.add('active');setTimeout(()=>playVids(slides[i],true),120);
+    document.getElementById('num').textContent=(i+1)+' / '+slides.length;
+    document.getElementById('barf').style.width=((i)/(slides.length-1)*100)+'%';
+    dotEls.forEach((d,k)=>d.classList.toggle('on',k===i));
+  }
+  const next=()=>go(i+1), prev=()=>go(i-1);
+  document.getElementById('next').onclick=next;document.getElementById('prev').onclick=prev;
+  const PAL=['p-pink','p-mint','p-peach','p-lav','p-blue'];
+  [...document.querySelectorAll('.slide.dark')].forEach((s,k)=>s.classList.add(PAL[k%PAL.length]));
+
+  const INFO={
+    muhammad:["예언자 무함마드","이슬람교를 창시한 예언자예요(570~632년). 이슬람에서 가장 존경받는 인물이고, 평소 고양이를 무척 아꼈다는 일화가 많이 전해져요. 그래서 이슬람 문화권에선 고양이를 특별히 귀하게 여기게 됐어요."],
+    ottoman:["오스만 제국","1299년부터 1922년까지, 600년 넘게 이어진 거대한 이슬람 제국이에요. 지금의 튀르키예가 그 후예예요. 이스탄불을 수도로 삼아 중동·북아프리카·동유럽까지 다스렸어요."],
+    hagia:["아야소피아","이스탄불의 상징인 1,500년 된 거대 건축물이에요. 537년 비잔틴 제국의 대성당으로 지어졌다가, 오스만 정복 뒤 모스크가 됐고 지금도 모스크예요. 웅장한 돔으로 세계적으로 유명해요."],
+    cappadocia:["카파도키아","튀르키예 중부의 신기한 바위 지대예요. 버섯처럼 솟은 기암괴석, 바위를 파서 만든 동굴 호텔, 새벽 하늘을 수놓는 열기구로 유명해요."],
+    laklakan:["구라바하네-이 라클라칸","19세기 부르사에 세워진 시설로, 다친 황새 같은 새와 길동물을 치료해 자연으로 돌려보냈어요. 이름은 ‘황새들의 쉼터’라는 뜻이고, 세계 최초의 동물병원 중 하나로 꼽혀요. 1931년 문을 닫았다가 2010년 다시 운영을 시작했어요."],
+    abdulhamid:["압뒬하미트 2세","1876~1909년 오스만 제국을 다스린 34대 술탄이에요. 철도·교육 등 근대화를 추진했지만, 강력한 전제정치로 평가가 크게 엇갈리는 인물이에요(제국 쇠퇴기의 마지막 실권 술탄). 이름난 동물 애호가로, 궁에 고양이를 1,500마리 가까이 두고 돌봤다고 전해져요."],
+    hadith:["하디스","예언자 무함마드의 말과 행동을 후대에 기록·전승한 모음집이에요. 이슬람에서 쿠란 다음으로 권위 있는 가르침으로, 무슬림의 생활 규범과 판단의 바탕이 돼요."],
+    bosphorus:["보스포루스","이스탄불을 가로지르는 바다 해협이에요. 이 물길을 경계로 한쪽은 유럽, 한쪽은 아시아예요. 낚시꾼이 줄지어 낚시하는 풍경으로도 유명해요."]
+  };
+  const STORIES={
+    gli:["글리 (Gli) · 아야소피아의 주인", `<p>이름이 튀르키예어로 '사랑의 결합'이라는 뜻이에요. 2004년 아야소피아에서 태어났어요 — 537년에 지어진 1,500년 된 건축물로, 비잔틴 대성당이었다가 모스크가 됐다가, 박물관이었다가 지금은 다시 모스크인 이스탄불의 상징이죠.</p><p>글리는 그곳에서 <b>16년</b>을 살았고, 인스타그램 팔로워가 12만 명을 넘겼어요. 결정적 사건은 <b>2009년 오바마 대통령</b>이 아야소피아를 방문해 글리를 쪼그려 앉아 쓰다듬은 거예요. 그 장면이 퍼지며 '관광객보다 유명한 고양이'가 됐죠.</p><p>2020년 11월 7일, 16살로 세상을 떠나 <b>아야소피아 안뜰에 묻혔어요.</b> 살아서도 죽어서도 그 건물의 일부가 된 거예요.</p>`],
+    tombili:["톰빌리 (Tombili) · 느긋함의 전설", `<p>'통통이'라는 뜻이에요. 카드쾨이 지베르베이 동네 길고양이인데, 인도 턱에 팔꿈치를 괴고 사람처럼 비스듬히 누운 사진 한 장으로 <b>2016년 전 세계 밈</b>이 됐어요. '세상 가장 편한 자세'의 대명사가 됐죠.</p><p>그해 8월 1일 세상을 떠나자, 조각가 <b>세발 샤힌</b>이 그 포즈 그대로 동상을 만들어 10월 4일 '세계 동물의 날'에 제막했어요. 부시장이 연설하고 수백 명이 추모했죠.</p><p>그런데 한 달 뒤 동상이 사라졌어요! 시가 도난을 발표하자 SNS가 '<b>#톰빌리_동상_어디갔어</b>' 해시태그로 들끓었고, 결국 11월 10일 누군가 구청 앞에 슬쩍 갖다 놨어요. 고양이 동상 하나가 도시를 들썩이게 한 사건이에요.</p>`],
+    mosque:["모스크의 고양이들 · 이맘 무스타파 에페", `<p>위스퀴다르의 <b>아지즈 마흐무드 휘다이 모스크</b> 이야기예요. 이맘 무스타파 에페는 추운 겨울, 길고양이들이 얼지 않게 예배 시간에도 모스크 문을 열어 안으로 들였어요.</p><p>그가 올린 영상 중엔 <b>엄마 고양이가 새끼를 한 마리씩 물고 '민바르(설교단)' 계단을 올라가는</b> 장면이 있어요. 이맘이 설교하는 신성한 자리에 고양이 가족이 자리 잡은 거죠. 이 영상이 전 세계로 퍼졌어요.</p><p>이맘은 말해요. "고양이들은 예배 중에도 우리와 함께 있어요. 신자들도 좋아해요." 지금도 그 모스크엔 열 마리쯤 되는 고양이가 산대요.</p>`],
+    kedi:["다큐 '케디(Kedi)' — 더 알아보기", `<p><b>제작.</b> 감독 제이다 토룬은 후보 고양이 35마리를 추렸다가 19마리를 찍고, 최종 <b>7마리</b>로 좁혔어요. 고양이 눈높이로 따라가려고 거리 바닥에 붙는 특수 카메라 리그를 만들었고, 사유지로 넘어가면 주민 양해를 구해 찍었대요. 드론으로 보스포루스 상공도 담았어요.</p><p><b>배경.</b> 이스탄불은 수천 년간 배들이 쥐를 잡으려 고양이를 태우고 드나든 항구도시예요. 정착하며 내린 고양이들이 카페 골목·상점·어시장·레스토랑·제철소 곳곳에 자리 잡고 사람과 함께 살아왔죠. 그래서 영화 속 한 시민은 말해요 — <b>"고양이가 없다는 건, 이스탄불 영혼의 한 부분을 잃는 것과 같다."</b></p><p><b>한국과 다른 시선.</b> 우리에겐 '골칫덩어리'로 여겨지기 쉬운 길고양이가, 이스탄불에선 '원래부터 곁에 있던 존재'예요. 길마다 사료·물그릇이 놓여 있고, 어떤 벽엔 이런 경고가 붙어 있죠 — <b>"이 그릇의 물은 개와 고양이를 위한 것. 다음 생에 갈증으로 고통받고 싶지 않다면 치우지 마세요."</b></p><p><b>메시지.</b> 인터뷰에 나온 사람들은 하나같이 "삶이 힘들 때 길고양이를 돌보며 위로와 희망을 얻었다"고 말해요. 동시에 도시화로 고양이들의 터전이 줄어드는 걸 안타까워하죠. '귀여운 고양이 영화'가 아니라, <b>고양이를 통해 사람을 보는</b> 작품이에요.</p><p><b>평가.</b> 로튼토마토 98%, 타임 '2017 올해의 영화 10선', 크리틱스 초이스 '가장 매력적인 주인공상'(주인공은 고양이들!), 전 세계 흥행 500만 달러 돌파.</p>`],
+    vetbus:["VetBus · 이동 동물병원", `<p>이스탄불시(IBB)의 이동식 동물병원 ‘<b>벳버스</b>’예요. 클리닉을 통째로 옮긴 버스가 <b>유럽 쪽·아시아 쪽에 각각 한 대씩</b>, 매일 다른 동네를 돌아요.</p><p>현장에서 건강검진·예방접종·기생충 치료·마이크로칩 삽입을 해주고, 상태가 심각한 아이는 시 치료센터로 옮겨서 더 봐줘요. ‘병원에 못 오는 길동물에게 <b>병원이 찾아가는</b>’ 방식이죠.</p>`],
+    tnvr:["TNVR · 잡지 않고 돌려보내기", `<p>TNVR은 포획(Trap)–중성화(Neuter)–백신(Vaccinate)–<b>제자리 방사(Return)</b>의 앞 글자예요. 잡아서 없애는 게 아니라, 중성화·백신을 한 뒤 원래 살던 자리로 돌려보내요.</p><p>그러면 새끼가 무한정 늘지 않으니 개체 수가 인도적으로 안정되고, 그 구역에 익숙한 고양이가 다른 떠돌이 유입도 막아줘요. ‘없애는 관리’가 아니라 ‘함께 사는 관리’인 거죠.</p>`],
+    feeding:["하루 1톤 급식", `<p>도시 외곽 숲에는 매일 사료를 <b>1톤 가까이</b> 차량으로 배급해요. 차가 경적을 울리면 동물들이 모여들 정도로 일상이 됐어요.</p><p>동네 곳곳엔 시민들이 놓아둔 밥그릇·물그릇이 있고, 카페·상점이 가게 고양이 밥을 챙겨요. ‘공동 급식’이 도시의 디폴트인 셈이에요.</p>`],
+    law:["2021 동물보호법 (5199호)", `<p>2021년 개정의 핵심은 — ① 동물을 ‘재산’이 아니라 <b>‘생명’</b>으로 규정, ② 펫숍의 개·고양이 <b>판매 금지</b>, ③ 마이크로칩·등록 의무화, ④ <b>유기 처벌</b> 강화, ⑤ 지자체의 보호소·재활 <b>예산 의무 배정</b>, ⑥ 길동물 중성화 원칙이에요.</p><p>여기에 동물권 단체 <b>HAYTAP</b> 같은 NGO가 지자체와 협력해 중성화·구조를 함께 운영해요. ‘정서 → 제도 → 다시 정서’의 선순환이죠.</p>`],
+    pugedon:["Pugedon · 급식 자판기", `<img class="story" src="https://img1.daumcdn.net/thumb/R658x0/?scode=mtistory2&amp;fname=https%3A%2F%2Fwww.messynessychic.com%2Fwp-content%2Fuploads%2F2015%2F03%2Fvendin3-930x620.jpg" onerror="this.onerror=null;this.src='assets/img/1766_삼색이_밥그릇.jpg'"><div class="scap">Pugedon 급식 자판기 — 빈 페트병을 넣으면 사료가 나와요</div><p>2014년 튀르키예 회사가 만든 ‘<b>스마트 리사이클 박스</b>’예요. 빈 페트병을 위에 넣으면, 아래로 길고양이·길개 사료가 나와요. 병에 남은 음료는 옆 물그릇에 부어 줘요.</p><p><b>태양광</b>으로 돌아가고, 모인 페트병 재활용 수익으로 사료값을 충당해서 <b>시 예산이 안 들어요.</b> ‘재활용 + 동물 급식’을 한 번에 푼 아이디어죠. 이스탄불에서 시작해 여러 나라로 수출됐어요. ‘시민이 일상에서 참여하는 급식’이라는 점이 한국과 크게 달라요.</p>`]
+  };
+  const infoBox=document.getElementById('info');
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('.info');
+    if(b&&INFO[b.dataset.k]){e.stopPropagation();document.getElementById('infoT').textContent=INFO[b.dataset.k][0];
+      document.getElementById('infoP').textContent=INFO[b.dataset.k][1];infoBox.classList.add('on');return;}
+    const m=e.target.closest('.more');
+    if(m&&STORIES[m.dataset.s]){e.stopPropagation();document.getElementById('infoT').textContent=STORIES[m.dataset.s][0];
+      document.getElementById('infoP').innerHTML=STORIES[m.dataset.s][1];infoBox.classList.add('on');}
+  });
+  infoBox.onclick=e=>{if(e.target===infoBox||e.target.classList.contains('x'))infoBox.classList.remove('on');};
+
+  // jump-to-slide buttons
+  document.addEventListener('click',e=>{const g=e.target.closest('.goto');
+    if(g&&g.dataset.go){e.stopPropagation();const idx=slides.findIndex(s=>s.dataset.t===g.dataset.go);if(idx>=0)go(idx);}});
+
+  // inline city detail panel
+  const CITYIMG={vetbus:'assets/img/1763_무릎위_고양이.jpg',tnvr:'assets/img/1434_길거리_주황고양이.jpg',feeding:'assets/img/1766_삼색이_밥그릇.jpg',law:'assets/img/1769_삼색이_소파_a.jpg'};
+  const cityPanel=document.getElementById('cityPanel'),cityRows=[...document.querySelectorAll('#cityList .crow')];
+  function showCity(k){const s=STORIES[k];if(!s||!cityPanel)return;
+    cityPanel.innerHTML='<img src="'+(CITYIMG[k]||'')+'" onerror="this.style.display=\'none\'"><h3>'+s[0]+'</h3>'+s[1];
+    cityRows.forEach(r=>r.classList.toggle('on',r.dataset.k===k));}
+  cityRows.forEach(r=>r.addEventListener('click',e=>{e.stopPropagation();showCity(r.dataset.k);}));
+  if(cityRows.length)showCity('vetbus');
+  const tip=document.getElementById('tip');
+  document.querySelectorAll('.info').forEach(b=>{
+    b.textContent='?';b.removeAttribute('style');
+    const dd=INFO[b.dataset.k]; if(dd) b.setAttribute('aria-label',dd[0]);
+    b.addEventListener('mouseenter',()=>{const d=INFO[b.dataset.k];if(!d)return;
+      tip.innerHTML='<b>'+d[0]+'</b>'+d[1];tip.style.display='block';
+      const r=b.getBoundingClientRect();let x=r.left,y=r.bottom+8;
+      if(x+340>window.innerWidth)x=window.innerWidth-340;
+      if(y+tip.offsetHeight+10>window.innerHeight)y=r.top-tip.offsetHeight-8;
+      tip.style.left=Math.max(8,x)+'px';tip.style.top=Math.max(8,y)+'px';});
+    b.addEventListener('mouseleave',()=>{tip.style.display='none';});
+  });
+
+  const extra=["assets/img/fish/fish_04.jpg","assets/img/fish/fish_06.jpg","assets/img/0059_카페_턱시도_a.jpg","assets/img/0061_카페_턱시도_b.jpg","assets/img/0062_카페_턱시도고양이2.jpg","assets/img/0063_카페_턱시도고양이3.jpg","assets/img/0060_카페_턱시도고양이.jpg","assets/img/1761_밥그릇_먹는고양이2.jpg","assets/img/1781_삼색이_의자_b.jpg","assets/img/2562_창가_회색_a.jpg","assets/img/2565_창가_회색_b.jpg","assets/img/2574_창가_태비_c.jpg","assets/img/1549_호텔_복시리우스_c.jpg","assets/img/1769_삼색이_소파_a.jpg","assets/img/v1880_길의_큰개.jpg"];
+  const seen=new Set();const gwrap=document.getElementById('gwrap');
+  function addG(src){if(!src||seen.has(src))return;seen.add(src);const im=new Image();im.src=src;im.loading="lazy";im.onerror=()=>im.remove();gwrap.appendChild(im);}
+  [...document.querySelectorAll('#deck .frame img')].forEach(im=>addG(im.getAttribute('src')));
+  extra.forEach(addG);
+
+  const gallery=document.getElementById('gallery');
+  const tS=document.getElementById('tabSlide'),tG=document.getElementById('tabGal'),tT=document.getElementById('tabToc');
+  function showGal(g){gallery.classList.toggle('on',g);tS.classList.toggle('on',!g);tG.classList.toggle('on',g);
+    ['prev','next','dots','num','bar'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=g?'none':'';});
+    if(g)playVids(slides[i],false);else setTimeout(()=>playVids(slides[i],true),100);}
+  tS.onclick=()=>{showGal(false);ov.classList.remove('on');};
+  tG.onclick=()=>{showGal(true);ov.classList.remove('on');};
+  tT.onclick=()=>ov.classList.toggle('on');
+
+  document.addEventListener('keydown',e=>{
+    if(infoBox.classList.contains('on')){if(e.key==='Escape')infoBox.classList.remove('on');return;}
+    if(ov.classList.contains('on')){if(e.key==='Escape')ov.classList.remove('on');return;}
+    if(gallery.classList.contains('on')){if(e.key==='Escape')showGal(false);return;}
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown')next();
+    else if(e.key==='ArrowLeft'||e.key==='PageUp')prev();
+    else if(e.key.toLowerCase()==='o')ov.classList.toggle('on');
+    else if(e.key.toLowerCase()==='g')showGal(true);
+    else if(e.key==='Escape')document.getElementById('lb').classList.remove('on');
+  });
+  document.getElementById('deck').addEventListener('click',e=>{
+    if(e.target.closest('video,button,a,img,.info,#cityList,#cityPanel')) return;
+    const x=e.clientX/window.innerWidth; if(x>0.64)next(); else if(x<0.36)prev();
+  });
+  const lb=document.getElementById('lb');const lbimg=lb.querySelector('img');
+  document.addEventListener('click',e=>{const im=e.target.closest('.gal img,.grid4 img,.grid2 img,.kstill,#gwrap img');
+    if(im){lbimg.src=im.src;lb.classList.add('on');}});
+  lb.onclick=()=>lb.classList.remove('on');
+  let sx=0;
+  document.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+  document.addEventListener('touchend',e=>{if(gallery.classList.contains('on'))return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>50){dx<0?next():prev();}});
+  go(0);
+</script>
+</body>
+</html>
