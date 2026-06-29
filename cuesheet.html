@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#5c7f9c">
+<title>큐시트 · 고양이 공화국, 튀르키예</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  :root{
+    --paper:#faf6f0; --card:#fff; --ink:#3c3a35; --body:#534e46; --soft:#9a948b;
+    --line:#ece7df; --accent:#5c7f9c; --accent2:#7f9eb7; --mint:#dbe9e0; --pink:#f4dadf;
+    --sans:'Apple SD Gothic Neo','Pretendard','Malgun Gothic',system-ui,sans-serif;
+  }
+  html,body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.5}
+  body{padding:0 0 96px}
+  /* sticky header */
+  header{position:sticky;top:0;z-index:20;background:rgba(250,246,240,.94);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);padding:10px 14px calc(10px) ;padding-top:calc(10px + env(safe-area-inset-top))}
+  .htop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .ttl{font-weight:800;font-size:.92rem;color:var(--accent)}
+  .counter{font-size:.8rem;color:var(--soft);font-weight:700}
+  .timerbar{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .clock{font-variant-numeric:tabular-nums;font-weight:800;font-size:1.5rem;letter-spacing:.5px}
+  .plan{font-size:.78rem;color:var(--soft);font-weight:600}
+  .plan b{color:var(--accent)}
+  .delta{font-size:.78rem;font-weight:800;padding:.1rem .45rem;border-radius:999px;margin-left:auto}
+  .delta.ok{background:var(--mint);color:#2d4a41}
+  .delta.over{background:var(--pink);color:#9a3b46}
+  .tbtns{display:flex;gap:6px;margin-top:8px}
+  .tbtn{flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit;
+    font-weight:800;font-size:.82rem;padding:.5rem;border-radius:10px;cursor:pointer}
+  .tbtn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  /* progress */
+  #bar{height:3px;background:var(--line)}
+  #barf{height:100%;width:0;background:var(--accent);transition:width .3s}
+  /* cue cards */
+  main{padding:12px 12px 0}
+  .cue{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 15px;margin:0 0 12px;
+    box-shadow:0 4px 14px rgba(60,58,53,.05);scroll-margin-top:140px;transition:border-color .2s,box-shadow .2s}
+  .cue.active{border-color:var(--accent);box-shadow:0 6px 22px rgba(92,127,183,.22)}
+  .crow{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .badge{flex:none;width:38px;height:38px;border-radius:10px;background:var(--accent);color:#fff;
+    font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.95rem}
+  .cue.active .badge{background:#e0894a}
+  .cname{font-weight:800;font-size:1.05rem;color:var(--ink);flex:1;line-height:1.25}
+  .ctime{font-size:.74rem;color:var(--soft);font-weight:700;text-align:right;white-space:nowrap}
+  .ctime b{display:block;color:var(--accent);font-size:.82rem}
+  .meta{font-size:.82rem;color:var(--body);margin:.35rem 0;display:flex;gap:6px}
+  .meta .k{flex:none;font-weight:800;color:var(--soft);width:34px}
+  .act{background:#f3f6f9;border-left:3px solid var(--accent2);padding:.4rem .6rem;border-radius:0 8px 8px 0;
+    font-size:.84rem;color:#3f5a73;font-weight:600;margin:.4rem 0}
+  .line{font-size:1.06rem;line-height:1.66;color:var(--ink);margin-top:.5rem}
+  .line .em{color:var(--accent);font-weight:700}
+  /* footer nav */
+  nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);
+    border-top:1px solid var(--line);display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+  nav button{flex:1;border:none;border-radius:12px;padding:.85rem;font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer}
+  .prev{background:#efe9e1;color:var(--ink)}
+  .next{background:var(--accent);color:#fff}
+  nav button:disabled{opacity:.4}
+  .hint{font-size:.74rem;color:var(--soft);text-align:center;padding:2px 12px 14px}
+</style>
+</head>
+<body>
+<header>
+  <div class="htop">
+    <div class="ttl">🐈 큐시트 · 고양이 공화국</div>
+    <div class="counter" id="counter">CUE 01 / 23</div>
+  </div>
+  <div class="timerbar">
+    <div class="clock" id="clock">0:00</div>
+    <div class="plan">예정 누적 <b id="planc">0:30</b></div>
+    <div class="delta ok" id="delta">±0:00</div>
+  </div>
+  <div class="tbtns">
+    <button class="tbtn primary" id="startBtn">▶ 시작</button>
+    <button class="tbtn" id="resetBtn">↺ 리셋</button>
+  </div>
+</header>
+<div id="bar"><div id="barf"></div></div>
+
+<main id="list"></main>
+
+<nav>
+  <button class="prev" id="prevBtn">◀ 이전</button>
+  <button class="next" id="nextBtn">다음 ▶</button>
+</nav>
+<div class="hint">카드를 탭하면 현재 큐로 표시돼요 · 시간은 예정 누적 대비 경과</div>
+
+<script>
+const CUES=[
+ {n:"01",name:"표지",dur:30,screen:"손글씨 타이틀 + 원형 스와치 · bb.tan",act:"",
+  line:"안녕하세요. 오늘은 3월 말에 다녀온 튀르키예 여행 이야기예요. 근데 여행기라기보단… 사실 ‘고양이 이야기’에 가까워요. 제목이 괜히 ‘고양이 공화국’이 아니거든요. (웃음) 같이 보실까요?"},
+ {n:"02",name:"목차",dur:40,screen:"원형 썸네일 8칸 목차",act:"썸네일 탭으로 점프 가능하다고 한마디",
+  line:"이스탄불에 딱 내리잖아요? 그 순간부터 어디에나 고양이가 있어요. 골목, 카페, 사원 마당까지. 첫날 저녁 식당 테이블에도 고양이가 떡하니 앉아 있었어요. 다들 그러려니 해요. 오늘은 ‘왜 이렇게 됐는지’부터 제가 만난 친구들까지 풀어볼게요."},
+ {n:"03",name:"왜 이렇게 많을까?",dur:30,screen:"손글씨 헤드라인 + 01 교역 / 02 이슬람 / 03 오스만",act:"세 항목 손으로 짚기",
+  line:"그래서 궁금해졌어요. 왜 이렇게 고양이가 많을까? 알고 보니 우연이 아니더라고요. 천 년 넘는 이유가 있어요. 크게 교역, 종교, 그리고 제국의 역사예요."},
+ {n:"04",name:"교역과 쥐잡이 (이유①)",dur:55,screen:"사진 블리드 + 넘버 01",act:"",
+  line:"첫째, 교역이에요. 비잔틴 시대부터 고양이는 무역선을 타고 들어와 배·곡식 창고의 쥐를 잡았어요. 중세 유럽이 고양이를 없앤 탓에 페스트로 고생할 때, 이스탄불은 고양이 덕에 피해가 덜했다고 해요. 게다가 오스만 집은 대부분 목조라, 쥐 잡는 고양이는 ‘도시의 방역 시스템’이었어요."},
+ {n:"05",name:"이슬람이 아끼는 동물 (이유②)",dur:55,screen:"사진 블리드(반전) + 넘버 02",act:"‘무함마드 ?’, ‘하디스 ?’ 호버",
+  line:"둘째, 종교예요. 무함마드가 기도하러 가려는데 고양이가 옷소매에서 잠들자, 깨우기 싫어 소매를 잘라내고 갔다는 일화가 전해져요. 하디스에도 “고양이는 부정하지 않다”는 말이 있고요. ‘깨끗한 동물’로 집·사원 안까지 들어올 수 있었고, 복을 나르는 존재로 사랑받았어요."},
+ {n:"06",name:"길동물을 ‘제도’로 돌본 제국 (이유③)",dur:55,screen:"사진 블리드 + 넘버 03",act:"‘라클라칸 ?’, ‘압뒬하미트 2세 ?’ 호버",
+  line:"셋째, 오스만은 이 마음을 ‘제도’로 만들었어요. 먹이 주는 직업 ‘만자즈’, 자선재단 ‘바키프’가 겨울 급식을 맡았어요. 부르사엔 ‘구라바하네-이 라클라칸’ — 세계 최초의 동물병원으로 꼽혀요. 압뒬하미트 2세는 궁에 고양이를 1,500마리나 둔 애묘가였고요."},
+ {n:"07",name:"숫자로 보는 캣스탄불",dur:40,screen:"빅넘버 125,000 / 200,000 / 0 + 패널",act:"숫자 하나씩 짚기 → 패널 강조",
+  line:"이스탄불 길고양이가 약 12만 5천, 집고양이까지 20만 마리로 추정돼요. 핵심은 숫자가 아니라 철학이에요. 살처분도 포획도 없어요. 많은 시민이 길고양이를 그저 함께 사는 공동체로 인식해요."},
+ {n:"08",name:"알고 보니, 스타들 (개요)",dur:25,screen:"글리·톰빌리·모스크 원형 포트레이트",act:"‘이야기 더 보기 →’ 누르면 개별 페이지로 이동",
+  line:"이 문화 속에서 ‘세계적 스타’가 된 고양이도 있어요. 세 마리만, 한 장씩 만나볼게요."},
+ {n:"09",name:"글리 · Gli",dur:55,screen:"텍스트 + 위키미디어 실사진",act:"‘아야소피아 ?’ 호버",
+  line:"첫째, 글리. ‘사랑의 결합’이라는 뜻이에요. 2004년 아야소피아에서 태어나 16년을 살았고, 인스타 팔로워 12만+. 2009년 오바마 대통령이 쪼그려 앉아 쓰다듬으면서 ‘관광객보다 유명한 고양이’가 됐죠. 2020년 16살로 떠나 아야소피아 안뜰에 묻혔어요."},
+ {n:"10",name:"톰빌리 · Tombili",dur:55,screen:"추모 동상 사진 + 텍스트",act:"",
+  line:"둘째, 톰빌리. ‘통통이’예요. 팔꿈치 괴고 누운 사진 한 장으로 2016년 전 세계 밈이 됐어요. 세상을 뜨자 그 포즈로 동상을 세웠는데 — 한 달 만에 사라졌다가, 여론이 들끓자 누군가 슬쩍 도로 갖다 놨어요. 고양이 동상이 도시를 들썩이게 한 사건이에요."},
+ {n:"11",name:"모스크의 고양이들",dur:50,screen:"텍스트 + 사진",act:"",
+  line:"셋째, 모스크 고양이. 한 이맘은 추운 겨울 길고양이를 예배 중에도 모스크 안으로 들였어요. 엄마 고양이가 새끼를 물고 설교단 계단을 오르는 영상이 전 세계로 퍼졌죠. “고양이들은 예배 중에도 우리와 함께 있어요.” 종교 공간과 길고양이의 공존이 울림을 줬어요."},
+ {n:"12",name:"에피소드① 복시리우스",dur:65,screen:"3단: 영상 · 이야기 · 사진 2×2",act:"▶ 영상 재생, 사진 가리키기",
+  line:"이제 제가 만난 친구들이에요. 첫 주인공 ‘복시리우스’. 카파도키아 동굴 호텔에서 우리 방에 상주 고양이가 생겼어요. 엄마가 “복실이 같다”고 해서 복시리우스. (웃음) 냄새가 진짜 강렬했고(거의 시궁창?), 다른 고양이는 다 쫓아내는 텃세왕이고, 밤새 우리 방에서 잤어요."},
+ {n:"13",name:"에피소드② 식탁 위의 손님",dur:45,screen:"콜라주(턱시도 고양이) + 텍스트",act:"콜라주 가리키기",
+  line:"이스탄불 첫날 저녁, 식당 테이블에 떡하니 앉아 있던 턱시도 고양이예요. 사람 자리에 같이 앉아 우리를 빤히 봤어요. 여기 고양이들은 사람 음식에 거리낌이 없어요. 카페에서 크루아상을 슬쩍 한 입 가져갈 정도였죠. (그 순간은 못 찍었어요!)"},
+ {n:"14",name:"도대체, 몇 마리야?",dur:25,screen:"대형 손글씨 + 사진 모자이크",act:"사진 훑기",
+  line:"진짜 어디를 봐도 고양이예요. 창가에, 계단에, 골목마다. 한 장 한 장 다 다른 고양이예요."},
+ {n:"15",name:"에피소드③ 낚시꾼 곁엔, 늘 고양이",dur:45,screen:"3단: 영상 · 이야기 · 생선 사진 2×2",act:"▶ 영상 재생",
+  line:"보스포루스 부둣가엔 낚시하는 사람이 정말 많은데, 그 옆엔 어김없이 고양이가 앉아 기다려요. 잡은 작은 생선을 툭 던져주면 그 자리에서 받아먹어요."},
+ {n:"16",name:"같이 먹고, 안고, 쓰다듬기",dur:45,screen:"파스텔 패널(인용) + 사진 그리드",act:"인용 문구 강조",
+  line:"밥그릇은 길마다, 무릎 위에 쏙, 처음 본 사람 품에도 안겨요. 램프 체험 때 “사람 음식 먹어도 되냐” 물으니 — “여기 고양이들은 다 사람화돼서 빵이든 우유든 잘 먹어요”라더라고요. 한국 비둘기처럼요."},
+ {n:"17",name:"길 위의 고양이들, 영상으로",dur:30,screen:"영상 그리드",act:"▶ 클립 2~3개 재생",
+  line:"영상으로 몇 개 더 볼게요. 거리 삼색이, 카파도키아 모래길 고양이, 호텔의 복시리우스까지."},
+ {n:"18",name:"이제는 ‘시스템’이 함께",dur:60,screen:"좌측 01~04 항목 + 우측 인라인 패널",act:"왼쪽 항목을 차례로 탭 → 오른쪽에 설명·사진(팝업 아님)",
+  line:"정서로만 굴러가는 게 아니에요. ① ‘벳버스’ — 병원이 길동물을 찾아가요. ② ‘TNVR’ — 중성화·백신 후 제자리로. ③ 하루 1톤 급식. ④ 2021 동물보호법 — ‘상품 아닌 생명’으로 못 박았어요. 정서·시스템·법이 삼박자로 맞물려요."},
+ {n:"19",name:"한국과 뭐가 다를까",dur:45,screen:"비교 카드 4장 + 한 줄 요약",act:"‘급식 자판기 → 더 보기’로 Pugedon 사진 보여주기",
+  line:"사실 TNR 기술 자체는 한국도 해요. 진짜 차이는 ‘도시 전체의 공존 문화’예요. 천 년의 뿌리, 가게·사원·집 안까지 환영, 빈 페트병 넣으면 사료 나오는 자판기 ‘Pugedon’까지. 한 줄 요약 — 한국은 ‘TNR(기술)’을, 튀르키예는 ‘TNR을 품은 공존 문화’를 해요."},
+ {n:"20",name:"다큐 ‘케디(Kedi)’",dur:60,screen:"포스터 + 명대사 + 평가 배지",act:"(선택) ‘영상’ 탭 예고편 / ‘더 보기’ 배경·평가",
+  line:"이 문화를 세계에 각인시킨 작품이 다큐 ‘케디’예요. 명대사 — “고양이가 발밑에서 야-옹 한다면, 그건 삶이 당신에게 미소 짓는 거예요.” 감독 제이다 토룬이 후보 35마리 중 7마리를 골라 고양이 눈높이로 따라갔어요. 로튼토마토 98%, 타임 올해의 영화 10선. 고양이를 통해 사람을 보는 영화예요."},
+ {n:"21",name:"주인공은, 일곱 마리",dur:35,screen:"다큐 스틸 + 7마리 카드",act:"7마리 빠르게 훑기",
+  line:"일곱 주인공이 다 캐릭터예요. 억척 엄마 사르, 유리창 두드리는 신사 두만, 애교쟁이 벵귀, 쥐 사냥꾼 아슬란, 동네 한량 감스즈, 질투의 여왕 프시코파트, 시장의 인싸 데니즈. “사람보다 더 사람 같은 고양이들의 러브레터.”"},
+ {n:"22",name:"개도 있었어요",dur:20,screen:"사진 블리드(골든)",act:"",
+  line:"고양이가 주인공이긴 했지만, 개도 있었어요. (웃음) 카펫 위 골든, 모래길의 큰 개. 환대는 고양이만의 게 아니었어요."},
+ {n:"23",name:"마무리",dur:25,screen:"대형 손글씨 클로징 + 사진",act:"",
+  line:"정리하면, 이 여행에서 배운 건 결국 ‘함께 사는 법’이었어요. 길 위의 모두를 환대하는 따뜻함이요. 복시리우스, 잘 지내겠죠? (웃음) 고맙습니다."}
+];
+
+// cumulative
+let cum=0; CUES.forEach(c=>{cum+=c.dur;c.cum=cum;});
+const TOTAL=cum;
+function ms(s){var m=Math.floor(s/60),x=s%60;return m+':'+String(x).padStart(2,'0');}
+
+const list=document.getElementById('list');
+CUES.forEach((c,i)=>{
+  const el=document.createElement('div');el.className='cue';el.id='cue'+i;
+  el.innerHTML='<div class="crow"><div class="badge">'+c.n+'</div>'+
+    '<div class="cname">'+c.name+'</div>'+
+    '<div class="ctime">'+ms(c.dur)+'<b>누적 '+ms(c.cum)+'</b></div></div>'+
+    (c.screen?'<div class="meta"><span class="k">화면</span><span>'+c.screen+'</span></div>':'')+
+    (c.act?'<div class="act">▸ '+c.act+'</div>':'')+
+    '<div class="line">'+c.line+'</div>';
+  el.addEventListener('click',()=>setActive(i,true));
+  list.appendChild(el);
+});
+
+let active=0, t0=null, elapsed=0, running=false, tick=null;
+const clock=document.getElementById('clock'), planc=document.getElementById('planc'),
+      delta=document.getElementById('delta'), counter=document.getElementById('counter'),
+      barf=document.getElementById('barf');
+
+function setActive(i,scroll){
+  active=Math.max(0,Math.min(CUES.length-1,i));
+  document.querySelectorAll('.cue').forEach((e,k)=>e.classList.toggle('active',k===active));
+  counter.textContent='CUE '+CUES[active].n+' / '+CUES.length;
+  planc.textContent=ms(CUES[active].cum);
+  barf.style.width=((active)/(CUES.length-1)*100)+'%';
+  document.getElementById('prevBtn').disabled=active===0;
+  document.getElementById('nextBtn').disabled=active===CUES.length-1;
+  if(scroll)document.getElementById('cue'+active).scrollIntoView({behavior:'smooth',block:'start'});
+  updateDelta();
+}
+function updateDelta(){
+  var plan=CUES[active].cum, d=elapsed-plan;
+  delta.textContent=(d>=0?'+':'−')+ms(Math.abs(d));
+  delta.className='delta '+(d>5?'over':'ok');
+}
+function render(){clock.textContent=ms(elapsed);updateDelta();}
+function startStop(){
+  if(running){running=false;clearInterval(tick);document.getElementById('startBtn').textContent='▶ 계속';}
+  else{running=true;t0=Date.now()-elapsed*1000;
+    tick=setInterval(()=>{elapsed=Math.round((Date.now()-t0)/1000);render();},250);
+    document.getElementById('startBtn').textContent='⏸ 일시정지';}
+}
+function reset(){running=false;clearInterval(tick);elapsed=0;render();document.getElementById('startBtn').textContent='▶ 시작';}
+
+document.getElementById('startBtn').onclick=startStop;
+document.getElementById('resetBtn').onclick=reset;
+document.getElementById('prevBtn').onclick=()=>setActive(active-1,true);
+document.getElementById('nextBtn').onclick=()=>setActive(active+1,true);
+
+setActive(0,false);
+render();
+</script>
+</body>
+</html>
